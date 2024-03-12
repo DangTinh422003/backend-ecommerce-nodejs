@@ -10,7 +10,7 @@ const app = express();
 app.use(morgan("dev"));
 app.use(helmet());
 app.use(compression());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 // init db
@@ -18,6 +18,6 @@ const instanceMongodb = require("./dbs/init.mongodb");
 const { checkOverload } = require("./helpers/check.connect");
 
 // init routes
-app.use("/", require("./routes"));
+app.use(require("./routes"));
 
 module.exports = app;

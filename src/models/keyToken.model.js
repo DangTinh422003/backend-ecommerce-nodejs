@@ -3,7 +3,7 @@ const { Schema, model } = require("mongoose");
 const DOCUMENT_NAME = "Key";
 const COLLECTION_NAME = "Keys";
 
-const tokenSchema = new Schema(
+const keytokenSchema = new Schema(
   {
     user: {
       type: Schema.Types.ObjectId,
@@ -25,5 +25,5 @@ const tokenSchema = new Schema(
   }
 );
 
-const tokeModel = model(DOCUMENT_NAME, tokenSchema);
+const tokeModel = model(DOCUMENT_NAME, keytokenSchema);
 module.exports = tokeModel;

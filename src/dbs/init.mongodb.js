@@ -8,7 +8,6 @@ const connectString = `mongodb://${host}:${port}/${name}`;
 class Database {
   constructor() {
     this.connect();
-    console.log(connectString);
   }
 
   static getInstance() {

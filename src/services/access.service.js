@@ -1,9 +1,9 @@
-const { model } = require("mongoose");
 const bcript = require("bcrypt");
 const shopModel = require("../models/shop.model");
 const crypto = require("crypto");
 const KeyTokenService = require("./keyToken.service");
 const { createTokenPair } = require("../auth/authUtils");
+const { type } = require("os");
 
 const RoleShop = {
   SHOP: "SHOP",
@@ -30,16 +30,24 @@ class AccessService {
         name,
         email,
         password: hashPassword,
-        roles: RoleShop.SHOP,
+        roles: [RoleShop.SHOP],
       });
 
       if (newShop) {
         // created private key , public key
-        const { privateKey, publicKey } = crypto.generateKeyPairSync("rsa", {
+        const { publicKey } = crypto.generateKeyPairSync("rsa", {
           modulusLength: 4096,
+          publicKeyEncoding: {
+            type: "pkcs1",
+            format: "pem",
+          },
+          privateKeyEncoding: {
+            type: "pkcs1",
+            format: "pem",
+          },
         });
 
-        const publicKeyString = await KeyTokenService.createToken({
+        const publicKeyString = await KeyTokenService.createKeyToken({
           userId: newShop._id,
           publicKey,
         });
@@ -51,14 +59,18 @@ class AccessService {
           };
         }
 
-        // create 2 token
-        const tokens = await createTokenPair(
-          { userId: newShop._id, email },
-          publicKey,
-          privateKey
+        const publicKeyObject = crypto.createPublicKey(publicKeyString);
+        console.log(
+          "🚀 ~ AccessService ~ signUp ~ publicKeyObject:",
+          publicKeyObject
         );
 
-        console.log(tokens);
+        // create 2 access token and refresh token
+        const tokens = await createTokenPair(
+          { userId: newShop._id, email },
+          publicKey
+        );
+
         return {
           code: 201,
           metadata: {
