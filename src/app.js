@@ -3,20 +3,21 @@ const morgan = require("morgan");
 const helmet = require("helmet");
 const compression = require("compression");
 require("dotenv").config();
+const bodyParser = require("body-parser");
 const app = express();
 
 // use middleware
 app.use(morgan("dev"));
 app.use(helmet());
 app.use(compression());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
 // init db
 const instanceMongodb = require("./dbs/init.mongodb");
 const { checkOverload } = require("./helpers/check.connect");
 
 // init routes
-app.get("/", (req, res) => {
-  res.send("Hello World!");
-});
+app.use("/", require("./routes"));
 
 module.exports = app;
