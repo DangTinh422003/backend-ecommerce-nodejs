@@ -3,6 +3,7 @@ const JWT = require("jsonwebtoken");
 // publicKey for verify token
 // privateKey for sign token
 const createTokenPair = async (payload, privateKey) => {
+  console.log("test", { payload, privateKey });
   try {
     const accessToken = await JWT.sign(payload, privateKey, {
       algorithm: "RS256",

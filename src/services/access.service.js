@@ -4,6 +4,7 @@ const crypto = require("crypto");
 const KeyTokenService = require("./keyToken.service");
 const { createTokenPair } = require("../auth/authUtils");
 const { type } = require("os");
+const { getInfoData } = require("../utils");
 
 const RoleShop = {
   SHOP: "SHOP",
@@ -35,7 +36,7 @@ class AccessService {
 
       if (newShop) {
         // created private key , public key
-        const { publicKey } = crypto.generateKeyPairSync("rsa", {
+        const { privateKey, publicKey } = crypto.generateKeyPairSync("rsa", {
           modulusLength: 4096,
           publicKeyEncoding: {
             type: "pkcs1",
@@ -60,21 +61,21 @@ class AccessService {
         }
 
         const publicKeyObject = crypto.createPublicKey(publicKeyString);
-        console.log(
-          "🚀 ~ AccessService ~ signUp ~ publicKeyObject:",
-          publicKeyObject
-        );
 
         // create 2 access token and refresh token
         const tokens = await createTokenPair(
           { userId: newShop._id, email },
-          publicKey
+          privateKey
         );
+        console.log("🚀 ~ AccessService ~ signUp ~ tokens:", tokens);
 
         return {
           code: 201,
           metadata: {
-            shop: newShop,
+            shop: getInfoData({
+              fileds: ["_id", "name", "email"],
+              object: newShop,
+            }),
             tokens,
           },
         };
